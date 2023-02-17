@@ -1,0 +1,71 @@
+
+class ATM:
+    def __init__ (self, name: str, balance: float, pin: int):
+        self.name = name
+        self.balance = balance
+        self.pin = pin
+    
+    def greeting(self):
+        print(f"Hello there, K. {self.name}")
+
+    def transfer(self, transfer_money):
+        self.balance -= transfer_money
+        print(f"Your balance: {self.balance}")
+        print("Transfer successfully.")
+
+    def check_balance(self):
+        message = f"Account: {self.name}, Balance: {self.balance}"
+        print(message)
+
+    def deposit(self, money):
+        self.balance += money
+        print(f"New Balance: {self.balance}")
+        print("Deposit successfully.")    
+
+    def change(self, new_pin):
+        self.pin = new_pin
+        print(f"New Pin: {self.pin}")
+        print("Your pin has been updated")
+
+    def login(self, enter_pin):
+        if enter_pin != self.pin:
+            print("Your pin is incorrect.")
+        elif enter_pin == self.pin:
+            print("Login successfully.")
+
+#object
+bank1_name = input("Your name: ")
+
+bank1_balance = float(input("Your balance: "))
+
+bank1_pin = int(input("Your pin (6 digits): "))
+
+ATM1 = ATM(bank1_name, bank1_balance, bank1_pin)
+
+#user_transection
+ATM1.greeting()
+
+ATM1_pin = int(input("Your pin: "))
+ATM1.login(ATM1_pin)
+
+if ATM1_pin == bank1_pin:
+    print("Choose our service\n 1. check balance\n 2. deposit\n 3. transfer\n 4. change pin")
+    service = input("please fill in the number: ")
+    
+    if service == "1":
+        ATM1.check_balance()
+    
+    elif service == "2":
+        money_deposit = float(input("Deposit total: "))
+        ATM1.deposit(money_deposit)
+        
+    elif service == "3":
+        money_transfer = float(input("Transfer total: "))
+        destination = input("To account no.: ")
+        print(f"You transfer {money_transfer} to account no. {destination}")
+        ATM1.transfer(money_transfer)
+    
+    elif service == "4":
+        ATM1_new_pin = int(input("Please enter your new pin: "))
+        ATM1.change(ATM1_new_pin)
+        
