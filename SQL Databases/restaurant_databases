@@ -1,0 +1,137 @@
+-- Restaurant database
+-- 5 Tables
+-- 1x Fact, 4x Dimension
+-- search google, how to add foreign key
+-- write SQL 3-5 queries analyze data
+-- 1x subquery/ with
+  /*
+--DIM1 
+ CREATE TABLE products (
+   product_id INT PRIMARY KEY,
+   product_name TEXT,
+   stock_id INT,
+   unit_price REAL,
+  Foreign Key (stock_id) REFERENCES stock_balance(stock_id)
+   );
+  
+ insert into products VALUES 
+   (1, 'Salmon sashimi' , 2, 289 ),
+   (2, 'Tuna sashimi' , 4, 299 ),
+   (3, 'Oyster' , 1, 325 ),
+   (4, 'Grilled scallops' , 3, 319 );
+ 
+ --DIM2
+ CREATE Table suppliers (
+  supplier_id INT PRIMARY KEY,
+  product_id INT,
+  purchase_price REAL,
+ FOREIGN KEY (product_id) REFERENCES products(product_id)
+  );
+ 
+ INSERT INTO suppliers VALUES 
+  (101, 2 , 120.89),
+  (102, 1 , 150.52),
+  (103, 4 , 185.45),
+  (104, 3 , 174.25);
+ 
+ --FACT1
+ CREATE TABLE stock_balance (
+   stock_id INT PRIMARY KEY,
+   balance_quantity INT,
+   expired_date DATE);
+ 
+ insert into stock_balance VALUES 
+  ( 1 , 268 , '2022-09-14'),
+  ( 2 , 579 , '2022-09-15'),
+  ( 3 , 180 , '2022-09-16'),
+  ( 4 , 210 , '2022-09-16');
+
+--DIM3
+CREATE TABLE invoices (
+  invoice_id INT PRIMARY KEY,
+  Customer_id INT,
+  invoice_date DATE,
+  Billing_city TEXT,
+FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+  );
+  
+ INSERT INTO invoices VALUES
+  (20220934, 1 , '2022-09-08', 'Bangkok'),
+  (20220935, 2 , '2022-09-08', 'Chonburi'),
+  (20220936, 3 , '2022-09-09', 'Bangkok'),
+  (20220937, 4 , '2022-09-10', 'Chiangmai');
+ 
+--FACT2 
+CREATE TABLE customer_order (
+   customer_order_id INT PRIMARY KEY,
+   invoice_id INT,
+   product_id INT,
+   quantity INT,
+ FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
+ FOREIGN KEY (product_id) REFERENCES products(product_id)
+ );
+   
+INSERT INTO customer_order VALUES
+   (1, 20220934 , 1 , 5),
+   (2, 20220935 , 2 , 4),
+   (3, 20220936 , 3 , 2),
+   (4, 20220937 , 4 , 3);
+
+--DIM4
+CREATE TABLE customers (
+  customer_id INT PRIMARY KEY,
+  customer_name TEXT,
+  customer_address TEXT,
+  customer_phone INT );
+
+INSERT INTO customers VALUES
+ (1, 'Jake' , 'Silom, Bangkok', 0239511299),
+ (2, 'Jay' , 'Pattaya, Chonburi', 0239511277),
+ (3, 'Lily' , 'Sathorn Bangkok', 0789541288),
+ (4, 'Paula' , 'Suthep, Chiangmai', 0739511266);
+
+.mode markdown
+.head on
+
+--Sale Table
+SELECT
+    product_id,
+    product_name,
+    quantity,
+    ROUND(quantity * unit_price,2) AS sale_amount,  
+    ROUND(quantity * purchase_price,2) AS purchase_amount,
+    STRFTIME( '%m', invoice_date ) AS 'month'
+FROM (
+  SELECT 
+   co.product_id,
+   pro.product_name,
+   co.quantity,
+   inv.invoice_date,
+   pro.unit_price,
+   sp.purchase_price
+  FROM products AS pro
+  JOIN customer_order AS co ON pro.product_id = co.product_id 
+  JOIN suppliers AS sp on pro.product_id = sp.product_id
+  JOIN invoices AS inv ON inv.invoice_id = co.invoice_id
+) AS sub 
+ORDER BY 3 DESC ;
+
+-- with + case when
+With stock_status AS (
+SELECT * ,
+    CASE 
+    WHEN balance_quantity > 300 THEN 'overstock'
+    WHEN balance_quantity <= 300 AND balance_quantity > 100 THEN 'normal'
+    ELSE 'understock' 
+    END AS status
+FROM stock_balance 
+WHERE status = 'overstock'
+) 
+SELECT 
+     product_name,
+     balance_quantity,
+     ROUND(balance_quantity * purchase_price) AS stock_amount,
+     status
+FROM products AS pr
+JOIN suppliers AS su ON pr.product_id = su.product_id
+JOIN stock_status AS ss ON ss.stock_id = pr.stock_id ;
