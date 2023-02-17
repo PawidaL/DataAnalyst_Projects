@@ -1,0 +1,131 @@
+/*
+CREATE TABLE customer (
+   customer_code TEXT (4) PRIMARY KEY,
+   customer_name TEXT,
+   phone INT,
+   address TEXT,
+   city TEXT,
+   postal_code INT
+ ) ;
+  
+ INSERT INTO customer VALUES
+   ("C1", "KT Electric" , 6035558647 , 'Bang Na', 'Bangkok' , 10260 ),
+   ("C2" , "Furu Public", 2125551500 , 'Si racha' , 'Chon Buri' , 20110),
+   ("C3" , "RB Power Tool", 7894551504 , 'San Sai' , 'Chiang Mai' , 50210),
+   ("C4" , "SC Supply" , 1894581804 , 'Muang Chonburi' , 'Chon Buri' , 20000),
+   ("C5" , "Matt Manufacturing" , 6836521202 , 'Bang Saotong' , 'Samut Prakan' , 10540);
+   
+
+CREATE TABLE product (
+   product_code TEXT PRIMARY KEY,
+   perchase_price REAL,
+   unit_saleprice REAL,
+   stock INT );
+   
+INSERT INTO product VALUES
+ ("E_352" , 27.89 , 50.74, 2000),
+ ("D2_10" , 55.23 , 86.51, 1000),
+ ("H103_1", 23.10 , 47.62, 5500),
+ ("13LT_C", 15.35 , 39.00, 5000),
+ ("14JT_C", 18.05 , 30.45, 23000);
+ 
+ 
+CREATE TABLE invoice (
+   invoice_id INT PRIMARY KEY,
+   invoice_date TEXT);
+   
+INSERT INTO invoice VALUES 
+ (2022001, "2022-06-19"),
+ (2022002, "2022-06-20"),
+ (2022003, "2022-06-24"),
+ (2022004, "2022-06-25");
+ 
+
+CREATE TABLE customer_order (
+  order_id INT (8) PRIMARY KEY,
+  product_code CHAR,
+  order_quantity INT,
+  invoice_id INT,
+  customer_code CHAR,
+  FOREIGN KEY (customer_code) REFERENCES customer(customer_code),
+  FOREIGN KEY (product_code) REFERENCES product(product_code),
+  FOREIGN KEY (invoice_id) REFERENCES invoice(invoice_id));
+  
+INSERT into customer_order VALUES
+  ( 10100, "E_352" , 2000 , 2022001 , "C4" ),
+  ( 10101, "D2_10" , 500 , 2022001 , "C4" ),
+  ( 10102, "H103_1" , 5000 , 2022002 , "C5" ),
+  ( 10103, "13LT_C" , 3000 , 2022003 , "C2" ),
+  ( 10104, "14JT_C" , 15000 , 2022004 , "C1" );
+  
+  -- change column name
+ alter table product RENAME perchase_price TO purchase_price
+*/
+-- sale summary by product
+/*
+ WITH sub_sale AS (
+ SELECT
+ co.order_quantity,
+ pr.product_code,
+ pr.stock,
+ pr.purchase_price,
+ pr.unit_saleprice,
+ cu.customer_code,
+ cu.customer_name
+ FROM customer_order AS co
+ JOIN product AS pr on co.product_code = pr.product_code
+ JOIN customer AS cu ON co.customer_code = cu.customer_code
+ )
+ 
+ SELECT *,
+    CASE 
+    WHEN stock_update > 20000 THEN 'overstock'
+    WHEN stock_update <= 20000 AND stock_update >= 5000 THEN 'normal'
+    ELSE 'understock' 
+    END AS stock_status
+ FROM (
+ SELECT 
+ product_code,
+ stock,
+ order_quantity,
+ (stock - order_quantity) AS stock_update,
+ purchase_price,
+ unit_saleprice,
+ (purchase_price * order_quantity) AS purchase_amount,
+ (unit_saleprice * order_quantity) AS sale_amount
+ FROM sub_sale
+ group by product_code 
+ ) AS sub_sale_byproduct ;
+*/
+
+-- Invoice summary and query to see sale_amount of each customer
+/*
+WITH invoice_summary AS (
+SELECT
+i.invoice_id,
+i.invoice_date,
+STRFTIME('%Y-%m', i.invoice_date) AS monthID,
+STRFTIME('%d', i.invoice_date) AS day,
+c.customer_name,
+c.phone,
+c.address,
+c.city,
+c.postal_code,
+p.product_code,
+p.unit_saleprice,
+o.order_quantity,
+(p.unit_saleprice * o.order_quantity) AS amount
+FROM customer_order AS o
+JOIN customer AS c ON o.customer_code = c.customer_code
+JOIN invoice AS i ON o.invoice_id = i.invoice_id
+JOIN product AS p ON o.product_code = p.product_code )
+
+select
+customer_name,
+SUM(order_quantity) AS sum_quantity,
+SUM(amount) AS sum_amount
+FROM invoice_summary 
+GROUP BY customer_name 
+OrDER by sum_amount DESC;
+
+*/
