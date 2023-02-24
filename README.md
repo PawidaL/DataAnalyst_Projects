@@ -1,31 +1,34 @@
 # Bootcamp Projects
 Data science bootcamp with 'adToy'
 
-Spreadsheets
-- Link to spreadsheet (Sales_Summary) : https://docs.google.com/spreadsheets/d/1xpDXh6WRKkjRZVY8Mc_AcVCs5TEPqWs7CfW_t66avuY/edit#gid=289644071
-- Link to github : https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Sales_Summary.pdf
+###### Spreadsheets
+- [Sales Summary by Spreadsheet](https://docs.google.com/spreadsheets/d/1xpDXh6WRKkjRZVY8Mc_AcVCs5TEPqWs7CfW_t66avuY/edit#gid=289644071)
+- [Sale Summary pdf](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Sales_Summary.pdf)
 
-SQL Database
-- Link : https://github.com/PawidaL/DataAnalyst_Projects/tree/main/SQL
+###### SQL Database
+- [Restaurant Database](https://github.com/PawidaL/DataAnalyst_Projects/tree/main/SQL)
+- [Sales Database](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/SQL/sales_database)
 
-Data Visualization
-- Link : https://github.com/PawidaL/DataAnalyst_Projects/tree/main/data_visualization
+###### Data Visualization
+- [Visualization by R](https://github.com/PawidaL/DataAnalyst_Projects/tree/main/data_visualization)
 
-Statistics
-- Link to spreadsheet (A/B Test_Fast Food Marketing) : https://docs.google.com/spreadsheets/d/1TxGGpoLV7I0l5wl1K7zvWho-jQN68eDoXel1b4O3oes/edit#gid=986265558
-- Link to github : https://github.com/PawidaL/DataAnalyst_Projects/blob/main/AB%20Test_Fast%20Food%20Marketing%20Campaign.pdf
+###### Statistics
+- [A/B Test_Fast Food Marketing by Spreadsheet](https://docs.google.com/spreadsheets/d/1TxGGpoLV7I0l5wl1K7zvWho-jQN68eDoXel1b4O3oes/edit#gid=986265558)
+- [A/B Test_Fast Food Marketing pdf](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/AB%20Test_Fast%20Food%20Marketing%20Campaign.pdf)
 
-Intro to 'Classical' Machine learning
-- ML Project : Car price prediction by Regression model and Stroke prediction by Classification model
-- Link : https://github.com/PawidaL/DataAnalyst_Projects/tree/main/project-ml
+###### Intro to 'Classical' Machine learning
+- [Car price prediction by Regression model](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/project-ml/carprice_prediction_regression_model.r)
+- [Stroke prediction by Classification model](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/project-ml/stroke_prediction_classification_model.r)
 
-Python for Data Analyst
-- The link includes API, Web scraping, Game : Rock - Paper - Scissors, HW Class ATM 
-- Link : https://github.com/PawidaL/DataAnalyst_Projects/tree/main/Python
+###### Python for Data Analyst
+- [Public API](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Python/API.ipynb)
+- [Web scraping](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Python/Web_Scraping.ipynb)
+- [Rock - Paper - Scissors](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Python/Rock-Paper-Scissors%20_Python)
+- [ATM OOP](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Python/Class_ATM_Python)
 
-Dashboard
-- Link to Tableau : https://public.tableau.com/shared/W7HK7FQR9?:display_count=n&:origin=viz_share_link
-- Link to github : https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Sales%20Dashboard.pdf
+###### Dashboard
+- [Electronic Parts Sales Dashboard by Tableau Public](https://public.tableau.com/shared/W7HK7FQR9?:display_count=n&:origin=viz_share_link)
+- [Electronic Parts Sales Dashboard pdf.](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Sales%20Dashboard.pdf)
 
 
 Badges : 
