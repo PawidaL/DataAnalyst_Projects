@@ -1,5 +1,4 @@
-# Bootcamp Projects
-Data science bootcamp with 'adToy'
+# Data Analysis Project
 
 ###### Spreadsheets
 - [Sales Summary by Spreadsheet](https://docs.google.com/spreadsheets/d/1xpDXh6WRKkjRZVY8Mc_AcVCs5TEPqWs7CfW_t66avuY/edit#gid=289644071)
