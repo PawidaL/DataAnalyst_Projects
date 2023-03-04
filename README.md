@@ -29,5 +29,3 @@
 - [Electronic Parts Sales Dashboard by Tableau Public](https://public.tableau.com/shared/W7HK7FQR9?:display_count=n&:origin=viz_share_link)
 - [Electronic Parts Sales Dashboard pdf.](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Sales%20Dashboard.pdf)
 
-
-Badges : 
