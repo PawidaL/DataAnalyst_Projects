@@ -1,3 +1,5 @@
+#This is a code for an ATM class that allows a user to perform various banking operations
+#Define an ATM class
 
 class ATM:
     def __init__ (self, name: str, balance: float, pin: int):
