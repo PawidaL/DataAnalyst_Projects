@@ -1,5 +1,6 @@
 ##Stroke Prediction by R
 
+## Load required libraries
 library(dplyr)
 library(caret)
 library(tidyverse)
@@ -16,37 +17,42 @@ data_stroke <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQQ-f2C
 View(data_stroke)
 glimpse(data_stroke)
 
-##remove row that show "N/A"
+## Remove rows that contain "N/A"
+## Check the proportion of complete cases
 mean(complete.cases(data_stroke))
 
 data_stroke <- data_stroke %>% 
   filter(bmi != "N/A") 
 
-##convert stroke to factor
+## Convert stroke to a factor variable
 data_stroke$stroke <- factor(data_stroke$stroke,
                       level = c(0,1),
                       labels = c("0", "1"))
 
+## Convert numeric variables from character format
 data_stroke$age <- as.numeric(data_stroke$age)
 data_stroke$avg_glucose_level <- as.numeric(data_stroke$avg_glucose_level)
 data_stroke$bmi <- as.numeric(data_stroke$bmi)
 
 
 ##Exploring numerical data
+## Calculate count and percent of each class
 data_stroke %>% 
   group_by(stroke) %>% 
   summarise(count = n()) %>% 
   mutate(percent = ((count / sum(count))*100))
 
+## Plot distribution of stroke classes
 data_stroke %>% 
   ggplot( aes(stroke)) +
   geom_bar(width = 0.5, fill = "darkorange") +
   theme_minimal()
 
-##The class "0" or is the majority class, and the smaller in size "Yes" class is the minority class.
-##The classes are imbalanced data.
+## Check for imbalanced data
+## The class "0" or "No" is the majority class, and the "Yes" class is the minority class.
+## The classes are imbalanced data.
 
-##Average glucose level and Stroke
+## Plot relationship between stroke and average glucose level
 data_stroke %>% 
   ggplot( aes(avg_glucose_level , fill=stroke))+
   geom_histogram(alpha=0.6, color="#e9ecef", position = 'identity') +
@@ -54,7 +60,7 @@ data_stroke %>%
   theme_minimal() +
   labs(fill="")
 
-##BMI and Stroke
+## Plot relationship between stroke and BMI
 data_stroke %>% 
   ggplot( aes(bmi , fill=stroke))+
   geom_histogram(alpha=0.6, color="#e9ecef", position = 'identity') +
@@ -62,7 +68,7 @@ data_stroke %>%
   theme_minimal() +
   labs(fill="")
 
-##Age and Stroke
+## Plot relationship between stroke and age
 data_stroke %>% 
   ggplot( aes(age , fill=stroke))+
   geom_histogram(alpha=0.6, color="#e9ecef", position = 'identity') +
@@ -70,16 +76,14 @@ data_stroke %>%
   theme_minimal() +
   labs(fill="")
 
-## drop column 'id'
+## Drop the 'id' column
 data_stroke <- data_stroke[, -1]
 
-##feature scaling 
-##Normalization the data 
-##the mean is 0 and standard deviation is 1
+## Feature scaling - normalize the data so that the mean is 0 and standard deviation is 1
 data.pre <-preProcess(data_stroke, method=c("center", "scale"))
 data_stroke <- predict(data.pre, data_stroke)
 
-## One-Hot Encoding
+## One-hot encoding for categorical variables
 dummy <- dummyVars("~ gender + ever_married + work_type + Residence_type + smoking_status", 
                    data = data_stroke,
                    fullRank = T) 
@@ -91,7 +95,7 @@ data_stroke <- data_stroke %>%
   mutate(data_dummy)
 
 
-##split data
+## Split data into training and testing sets
 train_test_split <- function(data, train_size = 0.7){
   set.seed(22)
   n <- nrow(data)
@@ -109,16 +113,14 @@ test_data <- split_data[[2]]
 nrow(train_data); nrow(test_data)
 
 
-##The classes are imbalanced data 
-##so perform over-sampling and under-sampling only for train data
-
+## Perform over-sampling and under-sampling on the training data to address class imbalance
 ovun_data <- ovun.sample(stroke ~., 
                          data = train_data, 
                          method = "over",
                          seed = 28)$data
 
-##Classification Model 
-##Model : Random Forest 
+## Classification model using Random Forest
+## Train the model
 crtl <- trainControl(method = "repeatedcv", 
                      number = 10, 
                      repeats = 3,
@@ -127,7 +129,6 @@ crtl <- trainControl(method = "repeatedcv",
 
 tunegrid <- expand.grid(.mtry = c(1:15))
 
-##Train
 set.seed(28)
 rf_model <- train( stroke ~ .,
                     data = ovun_data,
@@ -136,15 +137,14 @@ rf_model <- train( stroke ~ .,
                     tuneGrid = tunegrid,
                     trControl = crtl)
 
+## Make predictions on the test data and calculate accuracy
 p1 <- predict(rf_model, newdata = test_data)
 mean(p1 == test_data$stroke)
 
-##variable importance
+## Check variable importance
 varImp(rf_model)
 
-##Model : Random Forest
-##adjust variables 
-##Train model2
+## Train a new Random Forest model with selected variables
 set.seed(28)
 rf_model2 <- train( stroke ~ avg_glucose_level + age + bmi,
                    data = ovun_data,
@@ -153,17 +153,19 @@ rf_model2 <- train( stroke ~ avg_glucose_level + age + bmi,
                    tuneGrid = tunegrid,
                    trControl = crtl)
 
+## Make predictions on the test data and calculate accuracy
 p2 <- predict(rf_model2, newdata = test_data)
 mean(p2 == test_data$stroke)
 
-##Evaluate models
+## Evaluate the model using confusion matrix
 confusionMatrix(p2, 
                 test_data$stroke,
                 mode = "everything",
                 positive = "1")
 
 
-##Model : KNN
+## Classification model using KNN
+## Train the model
 crtl2 <- trainControl(method = "repeatedcv",
                       number = 10,
                       repeats = 10,
@@ -178,18 +180,20 @@ knn_model <- train( stroke ~ avg_glucose_level + age + bmi,
                     preProcess = c("center", "scale"),
                     tuneLength = 10)
 
+## Make predictions on the test data and calculate accuracy
 knn_p <- predict(knn_model, newdata = test_data)
 mean(knn_p == test_data$stroke)
 
 
-##Evaluate models
+## Evaluate the model using confusion matrix
 confusionMatrix(knn_p, 
                 test_data$stroke,
                 mode = "everything",
                 positive = "1")
 
 
-##Model : glm
+## Classification model using glm
+## Train the model
 glm_model <- train( stroke ~ avg_glucose_level + age + bmi,
                     data = ovun_data,
                     method = "glm",
@@ -197,17 +201,19 @@ glm_model <- train( stroke ~ avg_glucose_level + age + bmi,
                     trControl = crtl2,
                     tuneLength = 10)
 
+## Make predictions on the test data and calculate accuracy
 glm_p <- predict(glm_model, newdata = test_data)
 mean(glm_p == test_data$stroke)
 
-##Evaluate models
+## Evaluate the model using confusion matrix
 confusionMatrix(glm_p, 
                 test_data$stroke,
                 mode = "everything",
                 positive = "1")
 
 
-#Models : glm lasso, ridge
+## Classification model using glm lasso, ridge
+## Train the model 
 grid <- expand.grid(alpha = c(0,1),
                     lambda = seq(0,1, by = 0.03))
 
@@ -218,26 +224,29 @@ glmnet_model <- train( stroke ~ avg_glucose_level + age + bmi,
                        trControl = crtl2,
                        tuneGrid = grid)
 
+## Make predictions on the test data and calculate accuracy
 glmnet_p <- predict(glmnet_model, newdata = test_data)
 mean(glmnet_p == test_data$stroke)
 
-##Evaluate models
+## Evaluate the model using confusion matrix
 confusionMatrix(glmnet_p, 
                 test_data$stroke,
                 mode = "everything",
                 positive = "1")
 
-##Model : Decision tree 
+## Classification model using Decision tree 
+## Train the model 
 tree_model <- train( stroke ~ avg_glucose_level + age + bmi,
                     data = ovun_data,
                     method = "rpart",
                     metric = "Accuracy",
                     trControl = crtl)
 
+## Make predictions on the test data and calculate accuracy
 tree_p <- predict(tree_model, newdata = test_data)
 mean(tree_p == test_data$stroke)
 
-##Evaluate models
+## Evaluate the model using confusion matrix
 confusionMatrix(tree_p, 
                 test_data$stroke,
                 mode = "everything",
