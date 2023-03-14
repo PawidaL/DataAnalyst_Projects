@@ -1,5 +1,5 @@
 ## Car Price Prediction by R
-
+## Load required libraries
 library(dplyr)
 library(caret)
 library(mlbench)
@@ -19,32 +19,31 @@ carprice_data <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0O0
 View(carprice_data)
 glimpse(carprice_data)
 
-## check whether there is missing values or not
+## Check the proportion of complete cases
 mean(complete.cases(carprice_data))
 
-## drop column 'id'
+## Drop the 'id' column
 carprice_data <- carprice_data[, -1]
 
-## Data Visualization
-## visualizing Price(dependent variable)
-## Boxplot to detect Outlier
+## EDA
+## Generate boxplot to to visualize the distribution of the dependent variable 'price' in dataset.
+## The boxplot can help detect any potential outliers or unusual values in the price variable.
 carprice_data %>% 
   ggplot(aes( price))+
   geom_boxplot(fill="darkslategray3")+
   xlab("Car Price")
 
-## Histogram for Distribution
+## Creates a Histogram to visualize the distribution of the car prices in the dataset. 
 carprice_data %>% 
   ggplot(aes( price))+
   geom_density(fill="#52bf90",color="#52bf90",alpha=0.8)
 
 print(summary(carprice_data$price))
-## the price is skewed distribution, the most prices in the data set are below 15,000
-## the 85% of the prices are below 18,500, whereas the remaining 15% are between 18,500 and 45,400
-
+## the price is skewed distribution, the most prices in the data set are below 15,000.
+## the 85% of the prices are below 18,500, whereas the remaining 15% are between 18,500 and 45,400.
 
 ## visualizing numerical data
-## the plot show the relationship between price and numerical independent variables
+## Create a scatter plot matrix to visualize the relationship between the dependent variable, "price", and all the numeric independent variables.
 carprice_data %>% 
   keep(is.numeric) %>% 
   gather(-price, key = "key", value = "value") %>% 
@@ -54,14 +53,13 @@ carprice_data %>%
   facet_wrap(~key, scales = "free", ncol=3) +
   theme_minimal()
 
-## Calculate the correlation coefficient 
-## Compute the correlation matrix
+## Calculates the correlation matrix for the numerical columns
 col_num <- carprice_data %>% 
   keep(is.numeric)
 
 cormat <- round(cor(col_num),2)
 
-## correlation by heatmap
+## Create a heatmap to visualize the correlation between the numeric variables in the dataset.
 melted_cormat <- melt(cormat)
 head(melted_cormat)
 
@@ -77,7 +75,7 @@ melted_cormat %>%
 
 ## wheelbase, enginesize, boreratio and horesepower show the positive correlation with price.
 ## citympg and highwaympg show the negative correlation with price.
-## Highly correlated variables to price over 0.8 is curbweight, enginesize and horsepower
+## Highly correlated variables to price over 0.8 is curbweight, enginesize and horsepower.
 
 ## Visualizing categorical variable
 glimpse(carprice_data)
@@ -94,7 +92,7 @@ carprice_data %>%
   facet_wrap(~key_factor, scale = "free", ncol = 2) + 
   theme_minimal()
 
-## Boxplot
+## Creates a grouped box plot for the relationship between the price and categorical variables.
 carprice_data %>% 
   select(c(fueltype,aspiration, doornumber, carbody, drivewheel, enginelocation,
            enginetype,cylindernumber, fuelsystem, price)) %>% 
@@ -117,12 +115,12 @@ carprice_data %>%
 ## FWD is the most common type of drive wheel followed by RWD.
 
 
-## Separate 'CarName' column into 'CompanyName' and 'Model'
+## Extracts the CompanyName and Model from the CarName column.
 carprice_data <- extract(carprice_data, 
                          col = CarName, 
                          into = c("CompanyName", "Model"), 
                          regex = "^(\\w+)\\s?(.*)$")
-
+## List of all unique car company names
 unique(carprice_data$CompanyName)
 
 ## Replace misspelled company name
@@ -143,6 +141,8 @@ carprice_data %>%
 
 ## Observation : Company Name vs Price
 ## The highest price is Jaguar followed by Buick and Porsche
+
+## Categorizes cars into budget, medium, and highend categories based on their mean prices.
 price_mean <- carprice_data %>% 
   group_by(CompanyName) %>% 
   select(c(CompanyName, price)) %>% 
@@ -187,8 +187,7 @@ carprice_data_select <- carprice_data %>%
            carbody, drivewheel, enginetype, cylindernumber, 
            fuelsystem, carrange, price))
 
-
-## Split data
+## Split data into training and testing sets
 train_test_split <- function(data, train_size = 0.7){
   set.seed(22)
   n <- nrow(data)
@@ -206,17 +205,15 @@ test_data <- split_data[[2]]
 nrow(train_data)
 nrow(test_data)
 
-# 5 folds repeat 3 times
+## 5 folds repeat 3 times
 set.seed(22)
 crtl <- trainControl(method = "repeatedcv",
                      number = 5,
                      repeats=3,
                      verboseIter = T)
 
-## Train model
-## Random Forest
-
-## Model 1 
+## Regression model using Random Forest
+## Train the model
 set.seed(22)
 model_1 <- train( 
   price ~ .,
@@ -225,10 +222,12 @@ model_1 <- train(
       trControl = ctrl
       )
 
-# Feature importance
+## Check variable importance
 varImp(model_1)
 
-## Final model
+## Train a new Random Forest model with selected variables
+## Using four predictor variables (enginesize, curbweight, carrange, horsepower)
+## Final Model
 set.seed(22)
 model_2 <- train( 
   price ~ enginesize + curbweight + carrange + horsepower,
@@ -237,14 +236,14 @@ model_2 <- train(
   trControl = ctrl)
 
 ## Score and evaluation
-## Score / prediction
+## Make predictions on the test data
 p_2 <- predict(model_2, newdata = split_data[[2]])
 
-## Evaluation
+## Evaluate the model's performance by calculating the RMSE between the predicted prices and the actual prices of the test data.
 ## RMSE from model should close to predict
 RMSE(p_2, test_data$price)
 
-#final_model
-#R2 is 90.11%
-#train RMSE = 2347.098
-#test RMSE = 2427.435
+## Final Model
+## R2 is 90.11%
+## train RMSE = 2347.098
+## test RMSE = 2427.435
