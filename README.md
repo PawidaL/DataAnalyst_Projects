@@ -4,7 +4,7 @@
 - [Sales Summary by Spreadsheet](https://docs.google.com/spreadsheets/d/1xpDXh6WRKkjRZVY8Mc_AcVCs5TEPqWs7CfW_t66avuY/edit#gid=289644071)
 - [Sale Summary pdf](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Sales_Summary.pdf)
 
-###### SQL Database
+###### SQL Database (SQLite)
 - [Restaurant Database](https://github.com/PawidaL/DataAnalyst_Projects/tree/main/SQL)
 - [Sales Database](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/SQL/sales_database)
 
