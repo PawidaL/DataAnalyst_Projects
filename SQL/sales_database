@@ -1,6 +1,6 @@
 .open SQL_sales.db
 
---Create table including customer, peroduct, invoice, customer_order
+-- Create a table that includes customer, product, invoice, and customer_order.
 .print \n 'Table : Customer'\n
 DROP TABLE customer;
   
@@ -90,8 +90,9 @@ SELECT * FROM customer_order;
 ALTER TABLE product 
 RENAME COLUMN perchase_price TO purchase_price;
 
--- Sale Summary  and Stock Status by Product
-.print \n 'Sale Summary and Stock Status by Product' \n
+-- The following code generates a summary report on product sales and stock status, which can help identify products that are overstocked or understocked and may require adjustments to inventory management.
+
+.print \n 'Product Sales & Stock Status Summary Report' \n
 WITH sub_sales AS (
  SELECT
  co.order_quantity,
@@ -125,8 +126,9 @@ SELECT *,
  group by product_code 
  ) AS sub_sales_byproduct ;
 
--- Invoice summary by customer
-.print \n 'Invoice Summary by Customer' \n
+-- The following code generates a summary report on customer sales, which can be used to identify top-performing customers and make business decisions related to customer management and marketing.
+
+.print \n 'Customer Sales Summary Report' \n
 WITH invoice_summary AS (
 SELECT
 i.invoice_id,
@@ -152,4 +154,4 @@ SUM(order_quantity) AS sum_quantity,
 SUM(amount) AS sum_amount
 FROM invoice_summary 
 GROUP BY customer_name 
-OrDER by sum_amount DESC;
+ORDER by sum_amount DESC;
