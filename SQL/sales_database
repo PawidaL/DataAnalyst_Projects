@@ -1,4 +1,9 @@
-/*
+.open SQL_sales.db
+
+--Create table including customer, peroduct, invoice, customer_order
+.print \n 'Table : Customer'\n
+DROP TABLE customer;
+  
 CREATE TABLE customer (
    customer_code TEXT (4) PRIMARY KEY,
    customer_name TEXT,
@@ -14,12 +19,19 @@ CREATE TABLE customer (
    ("C3" , "RB Power Tool", 7894551504 , 'San Sai' , 'Chiang Mai' , 50210),
    ("C4" , "SC Supply" , 1894581804 , 'Muang Chonburi' , 'Chon Buri' , 20000),
    ("C5" , "Matt Manufacturing" , 6836521202 , 'Bang Saotong' , 'Samut Prakan' , 10540);
-   
+
+.mode table
+.header on
+SELECT * FROM customer;
+
+
+.print \n 'Table : Product'\n
+DROP TABLE product;
 
 CREATE TABLE product (
    product_code TEXT PRIMARY KEY,
    perchase_price REAL,
-   unit_saleprice REAL,
+   unit_salesprice REAL,
    stock INT );
    
 INSERT INTO product VALUES
@@ -28,7 +40,13 @@ INSERT INTO product VALUES
  ("H103_1", 23.10 , 47.62, 5500),
  ("13LT_C", 15.35 , 39.00, 5000),
  ("14JT_C", 18.05 , 30.45, 23000);
- 
+
+.mode table
+.header on
+SELECT * FROM product;
+
+.print \n 'Table : Invoice'\n
+DROP TABLE invoice;
  
 CREATE TABLE invoice (
    invoice_id INT PRIMARY KEY,
@@ -39,7 +57,13 @@ INSERT INTO invoice VALUES
  (2022002, "2022-06-20"),
  (2022003, "2022-06-24"),
  (2022004, "2022-06-25");
- 
+
+.mode table
+.header on
+SELECT * FROM invoice;
+
+.print \n 'Table : Customer Order'\n
+DROP TABLE customer_order;
 
 CREATE TABLE customer_order (
   order_id INT (8) PRIMARY KEY,
@@ -57,27 +81,31 @@ INSERT into customer_order VALUES
   ( 10102, "H103_1" , 5000 , 2022002 , "C5" ),
   ( 10103, "13LT_C" , 3000 , 2022003 , "C2" ),
   ( 10104, "14JT_C" , 15000 , 2022004 , "C1" );
-  
-  -- change column name
- alter table product RENAME perchase_price TO purchase_price
-*/
--- sale summary by product
-/*
- WITH sub_sale AS (
+
+.mode table
+.header on
+SELECT * FROM customer_order;
+
+-- Correct the column name
+ALTER TABLE product 
+RENAME COLUMN perchase_price TO purchase_price;
+
+-- Sale Summary  and Stock Status by Product
+.print \n 'Sale Summary and Stock Status by Product' \n
+WITH sub_sales AS (
  SELECT
  co.order_quantity,
  pr.product_code,
  pr.stock,
  pr.purchase_price,
- pr.unit_saleprice,
+ pr.unit_salesprice,
  cu.customer_code,
  cu.customer_name
  FROM customer_order AS co
  JOIN product AS pr on co.product_code = pr.product_code
  JOIN customer AS cu ON co.customer_code = cu.customer_code
- )
- 
- SELECT *,
+ ) 
+SELECT *,
     CASE 
     WHEN stock_update > 20000 THEN 'overstock'
     WHEN stock_update <= 20000 AND stock_update >= 5000 THEN 'normal'
@@ -90,16 +118,15 @@ INSERT into customer_order VALUES
  order_quantity,
  (stock - order_quantity) AS stock_update,
  purchase_price,
- unit_saleprice,
+ unit_salesprice,
  (purchase_price * order_quantity) AS purchase_amount,
- (unit_saleprice * order_quantity) AS sale_amount
- FROM sub_sale
+ (unit_salesprice * order_quantity) AS sales_amount
+ FROM sub_sales
  group by product_code 
- ) AS sub_sale_byproduct ;
-*/
+ ) AS sub_sales_byproduct ;
 
--- Invoice summary and query to see sale_amount of each customer
-/*
+-- Invoice summary by customer
+.print \n 'Invoice Summary by Customer' \n
 WITH invoice_summary AS (
 SELECT
 i.invoice_id,
@@ -112,20 +139,17 @@ c.address,
 c.city,
 c.postal_code,
 p.product_code,
-p.unit_saleprice,
+p.unit_salesprice,
 o.order_quantity,
-(p.unit_saleprice * o.order_quantity) AS amount
+(p.unit_salesprice * o.order_quantity) AS amount
 FROM customer_order AS o
 JOIN customer AS c ON o.customer_code = c.customer_code
 JOIN invoice AS i ON o.invoice_id = i.invoice_id
 JOIN product AS p ON o.product_code = p.product_code )
-
-select
+SELECT
 customer_name,
 SUM(order_quantity) AS sum_quantity,
 SUM(amount) AS sum_amount
 FROM invoice_summary 
 GROUP BY customer_name 
 OrDER by sum_amount DESC;
-
-*/
