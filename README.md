@@ -4,9 +4,10 @@
 - [Sales Summary by Spreadsheet](https://docs.google.com/spreadsheets/d/1xpDXh6WRKkjRZVY8Mc_AcVCs5TEPqWs7CfW_t66avuY/edit#gid=289644071)
 - [Sale Summary pdf](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/Sales_Summary.pdf)
 
-###### SQL Database (SQLite)
+###### SQL Database 
 - [Restaurant Database](https://github.com/PawidaL/DataAnalyst_Projects/tree/main/SQL)
 - [Sales Database](https://github.com/PawidaL/DataAnalyst_Projects/blob/main/SQL/sales_database)
+- [Customers ER-diagram](https://github.com/PawidaL/DataAnalyst_Projects/blob/1aa93b4ff24afc770ec2b0edf00fa2606d34ca8b/ER-diagram_customers.pdf)
 
 ###### Data Visualization
 - [Visualization by R](https://github.com/PawidaL/DataAnalyst_Projects/tree/main/data_visualization)
